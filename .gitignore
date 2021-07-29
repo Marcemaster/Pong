@@ -1,1 +1,5 @@
 venv/
+.python-version
+.vscode/
+**__pycache__/
+bucle_ppal.py/
