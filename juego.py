@@ -5,18 +5,35 @@ TAMANNO = (800, 600)
 VELOCIDAD = 5
 
 
-class Bola():
+class Movil():
+
     def __init__(self, x, y, w, h, color=(255, 255, 255)):
         self.x = x
         self.y = y
         self.w = w
         self.h = h
         self.color = color
+
+    def actualizate(self):
+        pass
+
+    def dibujate(self, lienzo):
+        pg.draw.rect(lienzo, self.color,
+                     pg.Rect(self.x, self.y, self.w, self.h))
+
+
+class Raqueta(Movil):
+    def __init__(self, x, y, color=(255, 255, 255)):
+        Movil.__init__(self, x, y, 20, 120, color)
+
+
+class Bola(Movil):
+    def __init__(self, x, y, color=(255, 255, 255)):
+        Movil.__init__(self, x, y, 20, 20, color)
         self.incremento_x = VELOCIDAD
         self.incremento_y = -VELOCIDAD
 
     def actualizate(self):
-
         self.x += self.incremento_x
         self.y += self.incremento_y
 
@@ -31,19 +48,18 @@ class Game():
     def __init__(self):
         self.pantalla = pg.display.set_mode(TAMANNO)
         self.reloj = pg.time.Clock()
-        self.bolas = []
-        for i in range(10):
-            tamanyo = randrange( 10, 41)
-            bola = Bola(randrange(0, TAMANNO[0]),
-            randrange(9, TAMANNO[1]),
-            tamanyo,
-            tamanyo,
-            (randrange(256), randrange(256), randrange(256)))
+        self.todos = []
 
-            
-            self.bolas.append(bola)
+        self.player1 = Raqueta(10, (TAMANNO[1] - 120)//2)
+        self.player2 = Raqueta(TAMANNO[0]-30, (TAMANNO[1] - 120) // 2)
 
-        self.bucle_principal()
+        self.todos.append(self.player1)
+        self.todos.append(self.player2)
+
+        bola = Bola(TAMANNO[0] // 2 - 10,
+                    TAMANNO[1] // 2 - 10,
+                    (255, 255, 0))
+        self.todos.append(bola)
 
 
     def bucle_principal(self):
@@ -56,15 +72,20 @@ class Game():
                 if evento.type == pg.QUIT:
                     game_over = True
 
-            for i in range(len(self.bolas)):
-                self.bolas[i].actualizate()
-        
+            for movil in self.todos:
+                movil.actualizate()
+
             self.pantalla.fill((0, 0, 0))
-            for bola in self.bolas:
-                pg.draw.rect(self.pantalla, bola.color, pg.Rect(bola.x, bola.y, bola.w, bola.h))
+
+            for movil in self.todos:
+                movil.dibujate(self.pantalla)
 
             pg.display.flip()
         pg.quit()
 
 
-juego = Game()
+if __name__ == '__main__':
+    juego = Game()
+    juego.bucle_principal()
+
+print(__name__)
